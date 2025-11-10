@@ -1,0 +1,128 @@
+/* --- RESETEO BÁSICO --- */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  background-color: #f7f7f7;
+}
+
+a {
+  text-decoration: none;
+  color: #007acc;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* --- CONTENEDOR PRINCIPAL --- */
+.content {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 60px); /* deja espacio para los botones fijos */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* centra verticalmente */
+  overflow: hidden;
+}
+
+/* --- MENSAJES --- */
+.message {
+  text-align: center;
+  color: #111;
+  padding: 20px;
+  max-width: 600px;
+}
+
+.note {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px 25px;
+  display: inline-block;
+}
+
+/* --- MENSAJES DE ERROR --- */
+.message.error {
+  color: #b00020;
+}
+
+.message.error .note {
+  border: 1px solid #f3a5a5;
+  background: #ffecec;
+}
+
+.message.error .details {
+  max-width: 500px;
+  font-size: 12px;
+  margin: 20px auto 0;
+  text-align: left;
+}
+
+.message.error h4 {
+  margin: 8px 0 0;
+  color: #a30000;
+}
+
+/* --- CANVAS --- */
+.canvas {
+  visibility: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.content .canvas {
+  visibility: visible;
+}
+
+/* --- ESTADOS DE ERROR / DIAGRAMA --- */
+.content:not(.with-error) .error,
+.content.with-error .intro,
+.content.with-diagram .intro {
+  display: none;
+}
+
+/* --- BOTONES --- */
+.buttons {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  gap: 10px;
+}
+
+.buttons li {
+  display: inline-block;
+}
+
+.buttons a {
+  display: inline-block;
+  background: #e0e0e0;
+  border: solid 1px #999;
+  padding: 6px 10px;
+  border-radius: 5px;
+  opacity: 0.6;
+  transition: all 0.2s ease-in-out;
+}
+
+.buttons a:hover {
+  background: #d0d0d0;
+  opacity: 1;
+}
+
+.buttons a.active {
+  background: #007acc;
+  color: #fff;
+  opacity: 1;
+}
