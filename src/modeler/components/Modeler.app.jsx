@@ -1,102 +1,43 @@
-import '../styles/styles.css'
+// Estilos Css
+import '../styles/modeler.css';
 import 'bpmn-js/dist/assets/diagram-js.css';
 import 'bpmn-js/dist/assets/bpmn-js.css';
 import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
 
-import BpmnModeler from 'bpmn-js/lib/Modeler';
-import { useRef, useState } from 'react';
+// Hooks React
+import { Link } from 'react-router-dom';
+// Custom Hooks
+import { useModeler } from '../hooks/useModeler';
+
+// Iconos
+import iconAdd from '../../assets/icons/add.png';
+import iconFolder from '../../assets/icons/folder.png';
+import iconBpmn from '../../assets/icons/bpmn.png';
+import iconSvg from '../../assets/icons/svg.png';
 
 export const ModelerApp = () => {
-  const [error, setError] = useState(null);
-  const modelerRef = useRef(null);
-
-  const diagramXML = `<?xml version="1.0" encoding="UTF-8"?>
-    <bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
-      xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
-      xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
-      xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
-      id="Definitions_1"
-      targetNamespace="http://bpmn.io/schema/bpmn">
-      <bpmn:process id="Process_1" isExecutable="false">
-        <bpmn:startEvent id="StartEvent_1"/>
-      </bpmn:process>
-      <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
-          <bpmndi:BPMNShape id="BPMNShape_StartEvent_1" bpmnElement="StartEvent_1">
-            <dc:Bounds x="186" y="82" width="36" height="36" />
-          </bpmndi:BPMNShape>
-        </bpmndi:BPMNPlane>
-      </bpmndi:BPMNDiagram>
-    </bpmn:definitions>`;
-
-  const createNewDiagram = (event) => {
-    event.preventDefault();
-    openDiagram(diagramXML);
-  }
-
-  const openDiagram = async (xml) => {
-    try {
-      const canvas = document.getElementById('js-canvas');
-      canvas.innerHTML = "";
-
-      modelerRef.current = new BpmnModeler({
-        container: '#js-canvas',
-      });
-
-      await modelerRef.current.importXML(xml);
-      setError(null);
-    } catch (err) {
-      setError("Error al crear diagrama BPMN");
-      console.log(err);
-    }
-  }
-
-  const setEncoded = (link, name, data) => {
-    if (!link) return;
-    
-    if (data) {
-      let encodedData = encodeURIComponent(data);
-      link.href = 'data:application/bpmn20-xml;charset=UTF-8,' + encodedData;
-      link.download = name;
-    } else {
-      console.error("Error: ",data);
-    }
-  }
-  
-  const saveSvg = async () => {
-    try {
-      const downloadSvgLink = document.getElementById('js-download-svg');
-      const { svg } = await modelerRef.current.saveSVG();
-      setEncoded(downloadSvgLink, "diagram.svg", svg);
-    } catch (error) {
-      console.error("Error: ",error);
-      setEncoded(downloadSvgLink, "diagram.svg", null);
-    }
-  }
-
-  const saveDiagram = async () => {
-    try {
-      const downloadLink = document.getElementById('js-download-diagram');
-      const { xml } = await modelerRef.current.saveXML({ format: true });
-      setEncoded(downloadLink, "diagram.bpmn", xml);
-    } catch (error) {
-      console.error("Error: ",error);
-      setEncoded(downloadLink, "diagram.bpmn", null);
-    }
-  }
+  const { visible, diagram, error, createNewDiagram, handleFileUpload, saveDiagram, saveSvg, dispatchUpload } = useModeler();
 
   return (
     <div>
       <div className="content" id="js-drop-zone">
-        <div className="message">
-          <div className="note">
-            Drop BPMN diagram from your desktop or 
-            <a id="js-create-diagram" href='' 
-              onClick={createNewDiagram} title='Create a new diagram'> create a new diagram </a> 
-            to get started.
-          </div>
+        <div>
+          <input
+            type="file"
+            id="upload-diagram"
+            accept=".bpmn, .xml"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+          />
         </div>
+        {visible && (
+          <div className="message">
+            <div className="note">
+              <a onClick={dispatchUpload}> Open </a> or 
+              <Link id="js-create-diagram" to='/new' onClick={createNewDiagram}> Create </Link> BPMN diagram.
+            </div>
+          </div>
+        )}
         {error && (
           <div className="message">
             <div className="note">
@@ -108,23 +49,37 @@ export const ModelerApp = () => {
             </div>
           </div>
         )}
-        <div className="canvas" id="js-canvas"></div>
+        <div className="canvas" id="js-canvas">
+        </div>
+        {diagram && (
+          <div className="buttons-control">
+            <ul className="buttons">
+              <li>
+                <a id="js-open-diagram" onClick={dispatchUpload} title="open BPMN diagram">
+                  <img src={iconFolder} alt="open" width={20} />
+                </a> 
+              </li>
+              <li>
+                <a id="js-create-svg" onClick={createNewDiagram} title="create BPMN diagram">
+                  <img src={iconAdd} alt="create" width={20} />
+                </a>
+              </li>
+            </ul>
+            <ul className="buttons">
+              <li>
+                <a id="js-download-diagram" title="download BPMN diagram" onClick={saveDiagram}>
+                  <img src={iconBpmn} alt="bpmn" width={20} />
+                </a>
+              </li>
+              <li>
+                <a id="js-download-svg" title="download as SVG image" onClick={saveSvg}>
+                  <img src={iconSvg} alt="svg" width={20} />
+                </a>
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
-      <ul className="buttons">
-        <li>
-          download
-        </li>
-        <li>
-          <a id="js-download-diagram" href='' title="download BPMN diagram" onClick={saveDiagram} ref={modelerRef}>
-            BPMN diagram
-          </a>
-        </li>
-        <li>
-          <a id="js-download-svg" href='' title="download as SVG image" onClick={saveSvg}>
-            SVG image
-          </a>
-        </li>
-      </ul>
     </div>
   )
 }
