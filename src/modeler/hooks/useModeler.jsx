@@ -2,7 +2,8 @@
 import { useRef, useState } from 'react';
 
 // Librería BPMN
-import BpmnModeler from 'bpmn-js/lib/Modeler';
+import BpmnModeler from 'bpmn-js/lib/Modeler'; // Modeler
+import 'https://unpkg.com/bpmn-js@18.8.0/dist/bpmn-viewer.development.js'; // Viewer
 
 export const useModeler = () => {
   const [visible, setVisible] = useState(true);
@@ -37,18 +38,25 @@ export const useModeler = () => {
       const confirmed = window.confirm("Ya existe un diagrama en edición, ¿seguró desea crear uno nuevo?");
       if (!confirmed) return;
     }
-    openDiagram(diagramInitial);
+    openOrEditDiagram(diagramInitial, 'edit');
   }
 
-  const openDiagram = async (xml) => {
+  const openOrEditDiagram = async (xml, action) => {
     try {
       setDiagram(true);
       const canvas = document.getElementById('js-canvas');
       canvas.innerHTML = "";
       
-      modelerRef.current = new BpmnModeler({
-        container: canvas,
-      });
+      if (action === 'open') {
+        modelerRef.current = new BpmnJS({
+          container: canvas,
+        });
+      }
+      if (action === 'edit') {
+        modelerRef.current = new BpmnModeler({
+          container: canvas,
+        });
+      }
       
       await modelerRef.current.importXML(xml);
       setVisible(false);
@@ -115,7 +123,7 @@ export const useModeler = () => {
     document.getElementById("upload-diagram").click();
   }
 
-  const handleFileUpload = async (event) => {
+  const handleFileUpload = async (event, action) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -128,7 +136,7 @@ export const useModeler = () => {
     const reader = new FileReader();
     reader.onload = async (e) => {
       const xml = e.target.result;
-      await openDiagram(xml);
+      await openOrEditDiagram(xml, action);
     };
     reader.readAsText(file);
 
