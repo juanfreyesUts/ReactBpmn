@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Componentes
 import { Nav } from './nav';
 import { Home } from './../home/components/Home';
+import { ViewerApp } from '../modeler/components/Viewer.app';
 import { ModelerApp } from "./../modeler/components/Modeler.app";
 
 export const RouterApp = () => {
@@ -13,6 +14,9 @@ export const RouterApp = () => {
       <Routes>
         <Route path='/' 
           element={<Home />}
+        />
+        <Route path='/viewer' 
+          element={<ViewerApp />}
         />
         <Route path='/modeler' 
           element={<ModelerApp />}
