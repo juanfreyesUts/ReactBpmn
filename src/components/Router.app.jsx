@@ -2,7 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Componentes
-import { Nav } from './nav';
+import { NavApp } from './Nav.app';
 import { Home } from './../home/components/Home';
 import { ViewerApp } from '../modeler/components/Viewer.app';
 import { ModelerApp } from "./../modeler/components/Modeler.app";
@@ -10,7 +10,7 @@ import { ModelerApp } from "./../modeler/components/Modeler.app";
 export const RouterApp = () => {
   return (
     <Router>
-      <Nav />
+      <NavApp />
       <Routes>
         <Route path='/' 
           element={<Home />}
