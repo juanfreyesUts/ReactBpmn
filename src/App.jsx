@@ -1,12 +1,14 @@
-import './App.css'
-import { ModelerApp } from './modeler/components/modeler.app'
+// Estilos Css
+import './App.css';
 
-function App() {
+// Componentes
+import { RouterApp } from './components/Router.app';
+
+export default function App() {
   return (
     <>
-      <ModelerApp />
+      <RouterApp />
     </>
   )
 }
 
-export default App
